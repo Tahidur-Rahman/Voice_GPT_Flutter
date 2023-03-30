@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:voiceassistant/BoxItem.dart';
@@ -8,9 +6,6 @@ import 'package:voiceassistant/openai_services.dart';
 import 'package:voiceassistant/pallete.dart';
 
 class HomePage extends StatefulWidget {
-
-  
-  
   const HomePage({Key? key}) : super(key: key);
 
   @override
@@ -23,17 +18,15 @@ class _HomePageState extends State<HomePage> {
   String speech = "";
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     initSpeechToText();
   }
 
-  Future<void> initSpeechToText() async{
+  Future<void> initSpeechToText() async {
     await speechToText.initialize();
-    setState(() {
-      
-    });
+    setState(() {});
   }
+
   Future<void> startListening() async {
     await speechToText.listen(onResult: onSpeechResult);
     setState(() {});
@@ -74,14 +67,14 @@ class _HomePageState extends State<HomePage> {
                 height: 120,
                 width: 120,
                 margin: const EdgeInsets.only(top: 10),
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     color: Pallete.assistantCircleColor,
                     shape: BoxShape.circle),
               ),
             ),
             Container(
               height: 123,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   image: DecorationImage(
                       image: AssetImage('assets/images/virtualAssistant.png'))),
@@ -98,11 +91,11 @@ class _HomePageState extends State<HomePage> {
               border: Border.all(color: Pallete.borderColor),
               borderRadius:
                   BorderRadius.circular(20).copyWith(topLeft: Radius.zero)),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: const Text(
+          child: const Padding(
+            padding: EdgeInsets.symmetric(vertical: 10),
+            child: Text(
               "Good Morning, What task can I do for you?",
-              style: const TextStyle(
+              style: TextStyle(
                   color: Pallete.mainFontColor,
                   fontSize: 20,
                   fontFamily: 'Cera-Pro'),
@@ -123,11 +116,12 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         Column(
-          children: [
+          children: const [
             BoxItem(
                 color: Pallete.firstSuggestionBoxColor,
                 title: "ChatGPT",
-                description: "A smarter way to stay organized and informed with ChatGPT"),
+                description:
+                    "A smarter way to stay organized and informed with ChatGPT"),
             BoxItem(
                 color: Pallete.secondSuggestionBoxColor,
                 title: "Dall-E",
@@ -141,20 +135,23 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ]),
-      floatingActionButton: FloatingActionButton(onPressed: ()async {
-        if(await speechToText.hasPermission && speechToText.isNotListening){
-          await startListening();
-        }else if(speechToText.isListening){
-          print('speech dfsd $speech');
-          await openAIService.isArtPromptAPI(speech);
-          await stopListening();
-        }else{
-          initSpeechToText();
-        }
-      },
-      backgroundColor: Pallete.firstSuggestionBoxColor,
-      child: const Icon(Icons.mic),
-      tooltip:"Listen",),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          if (await speechToText.hasPermission && speechToText.isNotListening) {
+            await startListening();
+          } else if (speechToText.isListening) {
+            print('speech dfsd $speech');
+            final finalSpeech = await openAIService.isArtPromptAPI(speech);
+            print(finalSpeech);
+            await stopListening();
+          } else {
+            initSpeechToText();
+          }
+        },
+        backgroundColor: Pallete.firstSuggestionBoxColor,
+        tooltip: "Listen",
+        child: const Icon(Icons.mic),
+      ),
     );
   }
 }
